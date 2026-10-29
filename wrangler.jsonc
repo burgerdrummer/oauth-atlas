@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "oauth-atlas",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-29",
+  "workers_dev": true,
+  "build": { "command": "node scripts/build-atlas.mjs" },
+  "vars": { "GROQ_MODEL": "openai/gpt-oss-20b" }
+}

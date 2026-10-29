@@ -2,6 +2,10 @@
 
 A focused Composio APM take-home: look up a provider, understand OAuth registration and external-user approval, follow a sourced checklist, and share the guide.
 
+## Hosting
+
+Cloudflare Workers deployment is configured in `wrangler.jsonc`. Follow [the deployment steps](docs/deployment.md) to connect this repository and add the existing Groq key as a server-side secret. No live URL has been verified yet.
+
 ## Run
 
 Node 22.13+ (24 recommended). No npm install or runtime dependencies.
