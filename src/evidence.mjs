@@ -4,7 +4,7 @@ const decode=s=>s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>'
 const hostFamily=h=>h.toLowerCase().replace(/^(www|developers?|docs|api)\./,'');
 const relatedHost=(a,b)=>hostFamily(a)===hostFamily(b);
 function extract(html){html=html.replace(/<(script|style)\b[^>]*>[\s\S]*?(?:<\/\1>|$)/gi,' ');const main=html.match(/<(?:main|article)\b[^>]*>([\s\S]*?)<\/(?:main|article)>/i)?.[1]||html;return decode(main.replace(/<(script|style|nav|header|footer)\b[^>]*>[\s\S]*?<\/\1>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ')).trim()}
-function excerpt(text){if(text.length<=2200)return text;const chunks=text.match(/.{1,550}(?:\s|$)/g)||[text];const ranked=chunks.map((text,index)=>({text,index,score:(text.match(/oauth|approval|review|scope|redirect|publish|verification|refresh|consent|register/gi)||[]).length})).sort((a,b)=>b.score-a.score).slice(0,3).sort((a,b)=>a.index-b.index);return (text.slice(0,350)+'\n[Selected excerpts]\n'+ranked.map(x=>x.text).join('\n[Ã¢â‚¬Â¦]\n')).slice(0,2200)}
+function excerpt(text){if(text.length<=2200)return text;const chunks=text.match(/.{1,550}(?:\s|$)/g)||[text];const ranked=chunks.map((text,index)=>({text,index,score:(text.match(/oauth|approval|review|scope|permission|capabilit|redirect|publish|verification|refresh|consent|register/gi)||[]).length})).sort((a,b)=>b.score-a.score).slice(0,3).sort((a,b)=>a.index-b.index);return (text.slice(0,350)+'\n[Selected excerpts]\n'+ranked.map(x=>x.text).join('\n[Ã¢â‚¬Â¦]\n')).slice(0,2200)}
 export async function retrieveEvidence(app,purpose=''){
  const log=[],pages=[],seen=new Set();let requests=0;
  async function read(value){let target=publicUrl(value);for(let redirects=0;redirects<3;redirects++){
@@ -19,7 +19,7 @@ export async function retrieveEvidence(app,purpose=''){
  const query=app+' OAuth app registration approval official developer documentation';let candidates=[];
  try{if(!seed){const search=await read('https://www.bing.com/search?format=rss&q='+encodeURIComponent(query));for(const item of search.html.matchAll(/<item>([\s\S]*?)<\/item>/gi)){const title=decode(item[1].match(/<title>([\s\S]*?)<\/title>/i)?.[1]||'Provider documentation');const link=decode(item[1].match(/<link>([\s\S]*?)<\/link>/i)?.[1]||'');try{candidates.push({url:publicUrl(link),title})}catch{}}log.push('One public search request; search snippets are discovery only, not evidence.')}}catch(e){log.push('Search discovery unavailable: '+e.message)}
  if(seed)candidates.unshift({url:seed,title:'Submitted provider website'});
- const topic=/oauth|authorization|authenticat|approval|publish|scope|developer/i;
+ const topic=/oauth|authorization|authenticat|approval|publish|scope|permission|capabilit|developer|\/reference|\/docs/i;
  candidates=candidates.map((c,i)=>({...c,score:(topic.test(c.url)?4:0)+(/developer|docs|api\./i.test(c.url)?3:0)+(seed&&new URL(c.url).hostname.endsWith(new URL(seed).hostname)?2:0),i})).sort((a,b)=>b.score-a.score||a.i-b.i).slice(0,6);
  const providerOrigin=seed?new URL(seed).origin:candidates.find(c=>!/(github\.com|wikipedia\.org|reddit\.com)/i.test(new URL(c.url).hostname))?.url;
  if(providerOrigin){const host=new URL(providerOrigin).hostname;candidates=candidates.filter(c=>relatedHost(new URL(c.url).hostname,host));}
@@ -32,9 +32,9 @@ export async function retrieveEvidence(app,purpose=''){
    const relevant=/oauth|authorization code|register.{0,30}app|developer documentation|api reference/i.test(text);
    if(!relevant){log.push(candidate.url+': no OAuth/API setup content; skipped');}
    if(relevant)pages.push({title:decode(document.html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||candidate.title).slice(0,160),url:document.url,excerpt:excerpt(text),retrievedAt:new Date().toISOString(),method:'Public HTTP retrieval; no console interaction'});
-   if(pages.length<4){const links=[...document.html.matchAll(/href=["']([^"']+)["']/gi)].map(x=>x[1]).filter(h=>topic.test(h)).sort((a,b)=>(/oauth|authenticat/i.test(b)?3:/approval|publish/i.test(b)?2:1)-(/oauth|authenticat/i.test(a)?3:/approval|publish/i.test(a)?2:1)).slice(0,10).reverse();for(const link of links){try{const url=publicUrl(new URL(decode(link),document.url).href);if(!seen.has(url)&&relatedHost(new URL(url).hostname,new URL(document.url).hostname)&&!candidates.some(c=>c.url===url))candidates.splice(i+1,0,{url,title:'Linked provider documentation'})}catch{}}}
+   if(pages.length<4){const links=[...document.html.matchAll(/href=["']([^"']+)["']/gi),...document.html.matchAll(/\]\((https?:\/\/[^\s)]+|\/[^\s)]+)\)/g)].map(x=>x[1]).filter(h=>topic.test(h)).sort((a,b)=>(/oauth|authenticat/i.test(b)?3:/approval|publish/i.test(b)?2:1)-(/oauth|authenticat/i.test(a)?3:/approval|publish/i.test(a)?2:1)).slice(0,10).reverse();for(const link of links){try{const url=publicUrl(new URL(decode(link),document.url).href);if(!seen.has(url)&&relatedHost(new URL(url).hostname,new URL(document.url).hostname)&&!candidates.some(c=>c.url===url))candidates.splice(i+1,0,{url,title:'Linked provider documentation'})}catch{}}}
   }catch(e){log.push(candidate.url+': '+e.message)}
  }
- if(!pages.length)throw Error('No readable public documentation was retrieved. Try the providerÃ¢â‚¬â„¢s exact developer-documentation URL. No guide was invented.');
+ if(!pages.length)throw Error('No readable public documentation was retrieved. Try the exact provider documentation URL. No guide was invented.');
  return {pages,log,requests,provider:app,purpose,retrievedAt:new Date().toISOString(),limits:{maxPages:4,maxHttpRequests:8,maxExcerptCharacters:8800}};
 }
