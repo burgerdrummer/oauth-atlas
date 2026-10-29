@@ -24,3 +24,9 @@ Caution: the generated Admin-dependent difficulty label is an interpretation, no
 - Name-based citation failure: https://agent.tinyfish.ai/runs/1f74599b-77c5-47a1-a9ac-653049a5aa8d
 
 Free model availability and best-effort search remain limitations. Source-linked drafts require review; a checklist is not proof of a working OAuth connection.
+
+## Post-fix live result
+
+Name-only Notion generation succeeded: 'Notion Public Connection for Reading Customer-Selected Pages OAuth setup'. Six steps covered connection creation, capabilities, credentials, authorization, code exchange and refresh. Three source URLs were returned (overview.md, public-connections.md, authorization.md under the Notion guides/get-started path). The copied share URL reopened the same guide. Export was clicked without an error, but the automation did not confirm a downloaded file; download completion remains unverified. External-access requirements remain explicitly unresolved. Full generated-guide correctness is not certified.
+
+Run: https://agent.tinyfish.ai/runs/a1d9db49-7f9e-4a4f-8cf5-d8e660576cfd
