@@ -4,7 +4,7 @@ A focused Composio APM take-home: look up a provider, understand OAuth registrat
 
 ## Hosting
 
-Cloudflare Workers deployment is configured in `wrangler.jsonc`. Follow [the deployment steps](docs/deployment.md) to connect this repository and add the existing Groq key as a server-side secret. No live URL has been verified yet.
+Cloudflare Workers deployment is configured in `wrangler.jsonc`. Follow [the deployment steps](docs/deployment.md) to connect this repository and add the existing Groq key as a server-side secret. Live site: https://oauth-atlas.harwaninoddy.workers.dev/ . Public health, four prepared guides, and a Notion exact-documentation-URL AI draft have been observed. See docs/final-validation.md for remaining limits.
 
 ## Run
 
@@ -35,7 +35,7 @@ Open http://127.0.0.1:4173. On the author's Windows machine, Open-Atlas.cmd choo
 
 For app names, the pipeline performs one public search-discovery request; supplied documentation URLs skip search and are fetched first. It retrieves at most four readable pages, limits the entire HTTP traversal to eight requests including redirects, and supplies at most 8,800 excerpt characters to one structured guide-generation call. No recursive model browsing, paid search grounding, or browser automation is used. A failed model call can try a configured alternative; there is no unlimited retry loop.
 
-Discovery currently uses Bing's public RSS search output, which is an undocumented, best-effort dependency. Search snippets never count as source evidence. A developer can submit the exact official documentation URL when discovery is unavailable. JavaScript-only, login-protected, inaccessible, or ambiguous sites can remain unresolved. The agent must report gaps instead of inventing instructions. This replacement pipeline has passed controlled tests but still needs a live retrieval-and-generation run.
+Discovery currently uses Bing's public RSS search output, which is an undocumented, best-effort dependency. Search snippets never count as source evidence. A developer can submit the exact official documentation URL when discovery is unavailable. JavaScript-only, login-protected, inaccessible, or ambiguous sites can remain unresolved. The agent must report gaps instead of inventing instructions. The current pipeline produced a live Notion AI draft from an exact documentation URL. App-name discovery reached synthesis but revealed a citation-index defect; see final-validation.md.
 
 Public HTML is reduced to text, scripts are discarded, and selected excerpts are supplied as untrusted data. HTTPS URL checks reject credentials, IP literals, private-style hostnames and custom ports; redirect destinations are rechecked. This is not a full DNS-rebinding defense or a production fetch proxy. The demo is intended for public provider documentation only.
 
@@ -80,7 +80,7 @@ Controlled checks cover request validation, source integrity, public-URL restric
 - scripts/serve-atlas.mjs: local server with disk-cache adapter and automatic Worker reload.
 - scripts/build-atlas.mjs: dependency-free Worker bundle and hosting metadata.
 
-No credentials belong in source, exports or screenshots. Source repository: https://github.com/burgerdrummer/oauth-atlas. A verified hosted deployment remains outstanding. The Sites identity is retained in .openai/hosting.json; source synchronization from the restricted execution environment has failed. Do not submit localhost as a public working link.
+No credentials belong in source, exports or screenshots. Source repository: https://github.com/burgerdrummer/oauth-atlas. The public Cloudflare deployment is accessible. The Sites identity is retained in .openai/hosting.json; source synchronization from the restricted execution environment has failed. Do not submit localhost as a public working link.
 
 ## Model failure recovery
 
@@ -98,4 +98,4 @@ Before generation, a coverage check looks for provider identity, user-delegated 
 
 Direct destinations were added where known. Handoff drafts include the use case, expected result, owner, documentation and redacted-error placeholders. They are copied for user review; no email or provider request is sent. Configuration, connection tests and external-access checks are self-reported separately from checklist completion, stored per scenario in the current browser, and included in Markdown exports.
 
-No paid service, extra provider account, chatbot, database, completed OAuth approval, or 100-guide content expansion was added. The submission still needs an accessible hosted experience and successful live verification of the latest pipeline. Current additions have controlled tests, not a newly observed end-to-end browser or provider setup test.
+No paid service, extra provider account, chatbot, database, completed OAuth approval, or 100-guide content expansion was added. The app is deployed and exact-URL generation has succeeded. Name-based generation and sharing/export checks are recorded separately in docs/final-validation.md; no authenticated provider setup is claimed.
