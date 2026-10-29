@@ -1,0 +1,119 @@
+{
+  "name": "Linear OAuth App Registration and External User Access",
+  "category": "OAuth Setup",
+  "summary": "Register a Linear OAuth application, enable actor authorization, and validate external user access to project issues via OAuth tokens.",
+  "audience": "Developers integrating with Linear on behalf of external users",
+  "prerequisites": [
+    "Linear workspace admin access",
+    "URL for OAuth redirect",
+    "App client name and description"
+  ],
+  "difficulty": "Unconfirmed",
+  "effort": "Unknown",
+  "wait": "Unknown",
+  "managed": "Check Composio managed auth for Linear, but confirm no official coverage yet",
+  "steps": [
+    {
+      "title": "Define OAuth Manifest",
+      "body": "Create a JSON/YAML manifest with oauth.client_name, oauth.client_uri, oauth.redirect_uris, oauth.grant_types, and webhook settings as per Linear spec.",
+      "where": "Linear OAuth app setup page",
+      "success": "Manifest file ready",
+      "owner": "Developer",
+      "source": 2
+    },
+    {
+      "title": "Submit Manifest for Registration",
+      "body": "Upload the manifest via Linear Developers portal or use the provided URL parameters to pre-populate the form. Verify all required fields are present.",
+      "where": "Linear Developers OAuth app creation interface",
+      "success": "App registered, client_id & client_secret issued",
+      "owner": "Developer",
+      "source": 2
+    },
+    {
+      "title": "Enable Actor Authorization",
+      "body": "Append `?actor=app` to the OAuth authorization URL so actions are performed as the app rather than the user.",
+      "where": "OAuth authorization flow",
+      "success": "Token obtained with app actor scope",
+      "owner": "Developer",
+      "source": 1
+    },
+    {
+      "title": "Request User Consent",
+      "body": "Redirect external users to the Linear OAuth consent screen. Ensure the redirect_uri matches one in the manifest.",
+      "where": "User-facing OAuth flow",
+      "success": "Users grant scopes, app receives code",
+      "owner": "Developer",
+      "source": 1
+    },
+    {
+      "title": "Exchange Code for Tokens",
+      "body": "POST to Linear token endpoint with client credentials and grant_type=authorization_code to receive access and refresh tokens.",
+      "where": "OAuth token endpoint",
+      "success": "Tokens stored securely",
+      "owner": "Developer",
+      "source": 1
+    },
+    {
+      "title": "Query Issues via GraphQL",
+      "body": "Use the GraphQL API with the access token to read project issues. Verify that the token can access the intended workspace and projects.",
+      "where": "Linear GraphQL endpoint",
+      "success": "Project issues returned",
+      "owner": "Developer",
+      "source": 0
+    }
+  ],
+  "blockers": [
+    {
+      "symptom": "Unclear if Linear requires app approval or review before external user access",
+      "action": "Verify approval process via official documentation",
+      "owner": "Developer",
+      "source": -1
+    },
+    {
+      "symptom": "Uncertainty whether actor=app mode is sufficient for external user actions",
+      "action": "Confirm actor authorization supports read operations",
+      "owner": "Developer",
+      "source": 1
+    }
+  ],
+  "agent": [
+    "Validate token scopes",
+    "Check workspace permissions"
+  ],
+  "human": [
+    "Submit manifest to Linear for review",
+    "Obtain confirmation on approval requirements"
+  ],
+  "uncertainty": [
+    "Approval requirement for external user access",
+    "Exact scopes needed for read-only issue access",
+    "Only selected public-document excerpts were read; account-specific settings and external-user approval still require validation."
+  ],
+  "sources": [
+    {
+      "title": "Linear Developers",
+      "url": "https://linear.app/developers"
+    },
+    {
+      "title": "OAuth actor authorization \u2013 Linear Developers",
+      "url": "https://linear.app/developers/oauth-actor-authorization"
+    },
+    {
+      "title": "OAuth application manifests \u2013 Linear Developers",
+      "url": "https://linear.app/developers/oauth-app-manifests"
+    }
+  ],
+  "next": "Ask Linear for official approval policy and required scopes for external user access",
+  "id": "research-3d076a62-b1c5-4f14-bab0-fbb97fea7cb8",
+  "initials": "LI",
+  "color": "#527448",
+  "checked": "2026-10-28",
+  "status": "AI draft",
+  "goal": "Read project issues for external users through user-delegated OAuth; validate registration and external-user access",
+  "scopeText": "Confirm minimum scopes against the cited API documentation",
+  "requestContext": {
+    "app": "Linear",
+    "purpose": "Read project issues for external users through user-delegated OAuth; validate registration and external-user access"
+  },
+  "observation": "Retrieved 4 public pages using bounded HTTP requests, then generated this draft. Source claims have not been manually audited. No provider login, setup, consent, API action, or approval was attempted."
+}

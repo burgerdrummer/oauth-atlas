@@ -1,0 +1,125 @@
+{
+  "name": "Linear",
+  "category": "Project management",
+  "summary": "Register a user-delegated OAuth app for reading issues. Public distribution, actor choice, and directory listing are separate decisions.",
+  "audience": "An external-user web app reading issues using each authorizing user\u2019s access. App-actor authorization and client credentials are separate use cases.",
+  "prerequisites": [
+    "A Linear account with access to the app-management workspace; verify the required workspace role.",
+    "Your callback URL and an application endpoint that can receive the authorization response.",
+    "A server-side credential and token store, or an appropriate PKCE implementation."
+  ],
+  "difficulty": "Unconfirmed",
+  "effort": "30-90 min (estimate)",
+  "wait": "Unknown: no external-user approval SLA verified in this audit.",
+  "managed": "Check Composio\u2019s current managed-auth directory before creating your own app. Coverage is not established by this example.",
+  "steps": [
+    {
+      "title": "Register an OAuth application",
+      "body": "Use Linear\u2019s OAuth app creation settings and register your redirect callback. A manifest is an optional reproducible configuration format, not a mandatory first step.",
+      "where": "Linear settings: API / OAuth applications",
+      "success": "An app exists and the intended callback is registered.",
+      "owner": "Developer / account owner",
+      "source": 0
+    },
+    {
+      "title": "Choose distribution for the intended audience",
+      "body": "Private distribution is the default. Public distribution allows installation by other workspaces. Verify required app metadata and target-workspace policies; this setting does not establish a completed provider review.",
+      "where": "OAuth app distribution settings",
+      "success": "Distribution matches internal testing or external-workspace installation.",
+      "owner": "App owner",
+      "source": 1
+    },
+    {
+      "title": "Use read access and the user actor",
+      "body": "For reading on behalf of individual users, use read access and retain the default user actor. App-actor authorization is an alternative installation model, not a requirement for this task.",
+      "where": "OAuth authorization request",
+      "success": "The request uses read access and the intended actor without unnecessary write/admin permissions.",
+      "owner": "Developer",
+      "source": 0
+    },
+    {
+      "title": "Implement consent and callback validation",
+      "body": "Send the user through authorization-code consent, match the callback and validate state. If using PKCE, follow the documented challenge and verifier branch.",
+      "where": "Your application and Linear consent screen",
+      "success": "A consenting test user returns a code with matching state.",
+      "owner": "Developer and test user",
+      "source": 0
+    },
+    {
+      "title": "Exchange and refresh tokens securely",
+      "body": "Follow the documented token exchange for your chosen confidential-client or PKCE branch. Access tokens last 24 hours; persist refreshed replacement tokens securely and test recovery.",
+      "where": "Server-side OAuth callback and token store",
+      "success": "Token exchange and a subsequent refresh succeed in a real test.",
+      "owner": "Developer",
+      "source": 0
+    },
+    {
+      "title": "Validate intended issue access before launch",
+      "body": "Use the obtained token with Linear\u2019s GraphQL API. Test the actual read operation for the intended project and workspace; a successful viewer check alone does not establish issue access. Validate a second target workspace before external launch.",
+      "where": "Your integration test environment",
+      "success": "The intended test user can read permitted project issues, while unauthorized resources remain unavailable.",
+      "owner": "Developer and target-workspace tester",
+      "source": 0
+    }
+  ],
+  "blockers": [
+    {
+      "symptom": "The app cannot be installed outside its owning workspace",
+      "action": "Check distribution: private is the default; use public for other workspaces. If still blocked, ask the target workspace owner to identify its actual policy.",
+      "owner": "App owner and target workspace owner",
+      "source": 1
+    },
+    {
+      "symptom": "The guide proposes app-actor mode for user-delegated reading",
+      "action": "Use the default user actor for this scenario. Evaluate app-actor authorization only if the product needs actions attributed to an installed application.",
+      "owner": "Developer",
+      "source": 2
+    },
+    {
+      "symptom": "Approval requirements or waiting time remain unclear",
+      "action": "Check current official distribution/directory requirements and ask Linear support about any unresolved external-user restriction. Do not invent an approval duration.",
+      "owner": "Developer",
+      "source": -1
+    }
+  ],
+  "agent": [
+    "Extract registration requirements and draft callback/scope configuration from cited docs.",
+    "Prepare state/PKCE and token-refresh test cases; a human must actually run them."
+  ],
+  "human": [
+    "Sign in to Linear, create the app, and store credentials securely.",
+    "Authorize with a test user, verify intended issue access, and confirm target-workspace policy before launch."
+  ],
+  "uncertainty": [
+    "Required app-creator role and customer-workspace restrictions remain untested.",
+    "No mandatory provider review or review timeline was established for this scenario; public distribution is not proof that all customer policies permit installation.",
+    "The automatically generated draft did not pass the audit. This example was manually corrected; it is not a new successful generation test."
+  ],
+  "sources": [
+    {
+      "title": "Linear OAuth 2.0 authentication",
+      "url": "https://linear.app/developers/oauth-2-0-authentication"
+    },
+    {
+      "title": "Linear OAuth app manifests and distribution",
+      "url": "https://linear.app/developers/oauth-app-manifests"
+    },
+    {
+      "title": "Linear OAuth actor authorization",
+      "url": "https://linear.app/developers/oauth-actor-authorization"
+    }
+  ],
+  "next": "Open Linear\u2019s OAuth application settings and register your callback. Choose public distribution for installation beyond the owning workspace; verify any policy constraints before launch.",
+  "id": "linear",
+  "initials": "LI",
+  "color": "#5e6ad2",
+  "checked": "2026-10-29",
+  "status": "Source-reviewed",
+  "goal": "Read project issues on behalf of external users",
+  "scopeText": "read; user actor by default",
+  "requestContext": {
+    "app": "Linear",
+    "purpose": "Read project issues for external users through user-delegated OAuth; validate registration and external-user access"
+  },
+  "observation": "The live generator produced a Linear draft from four pages. A subsequent manual source audit found incorrect actor selection and an optional manifest treated as required. This reviewed example corrects those claims using the linked official documentation. No authenticated Linear setup, consent, token exchange, issue query, or approval was attempted."
+}
